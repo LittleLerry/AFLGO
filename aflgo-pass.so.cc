@@ -279,13 +279,13 @@ bool AFLCoverage::runOnModule(Module &M) {
   // ! The first time is used to generate CGF/CG for further distance calculation.
   if (is_aflgo_preprocessing) {
 
-    //
+    // * just all bbs
     std::ofstream bbnames(OutDirectory + "/BBnames.txt", std::ofstream::out | std::ofstream::app);
 
-    //
+    // * just all calls
     std::ofstream bbcalls(OutDirectory + "/BBcalls.txt", std::ofstream::out | std::ofstream::app);
 
-    // * Just name of the function
+    // * Just each name of the functions
     std::ofstream fnames(OutDirectory + "/Fnames.txt", std::ofstream::out | std::ofstream::app);
 
     // * Name of the function where our target(filename:line) is in
@@ -365,7 +365,12 @@ bool AFLCoverage::runOnModule(Module &M) {
                 }
             }
 
+            // * It is the end of the scope for (auto &I : BB)
             // * To know if an instruction is a function call or not.
+            // * We will record call instructions by "bb_names,CalledFunctionName"
+            // * For example we have
+            // * line:1145 add(1,2);
+            // * Then the call will be recorded as "bb_names,add"
             if (auto *c = dyn_cast<CallInst>(&I)) {
 
                 // * The following code seems useless 'cause we have handled filename previously
